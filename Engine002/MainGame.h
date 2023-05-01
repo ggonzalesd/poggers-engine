@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL/SDL.h>
 #include <GL/eglew.h>
+#include <vector>
 #include "Shader.h"
 #include "Sprite.h"
 
@@ -14,8 +15,10 @@ private:
 	int width;
 	int height;
 	SDL_Window* window;
-	Sprite sprite;
+	std::vector<Sprite> sprites;
 	Shader shader;
+	float timer;
+
 	void init();
 	void processInput();
 	void initShader();

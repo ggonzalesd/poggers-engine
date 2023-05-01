@@ -5,6 +5,7 @@ MainGame::MainGame() {
 	width = 600;
 	height = 600;
 	gameState = GameState::PLAY;
+	timer = 0.0f;
 }
 
 MainGame::~MainGame() {
@@ -13,7 +14,7 @@ MainGame::~MainGame() {
 
 void MainGame::init() {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	window = SDL_CreateWindow("Hola", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow("poggers engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
 	if (window == nullptr) {
 		// Validación de fallo
 	}
@@ -50,14 +51,28 @@ void MainGame::draw() {
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// si tengo elementos actualizo
+
+	timer += 0.001f;
+
 	shader.Use();
-	sprite.draw();
+	GLint uDesface = shader.getUniform("uDesface");
+
+	for (size_t i = 0; i < sprites.size(); i++) {
+		glUniform1f(uDesface, timer + 0.1f*i);
+		sprites[i].draw();
+	}
+	
 	SDL_GL_SwapWindow(window);
 }
 
 void MainGame::run() {
 	init();
-	sprite.init(-0.5, -0.5, 1, 1);
+	
+	sprites = { Sprite(), Sprite() };
+	
+	sprites[0].init(-0.6, -0.6, 1, 1);
+	sprites[1].init(-0.5, -0.5, 1, 1);
+
 	update();
 }
 

@@ -8,10 +8,9 @@ private:
 	float x, y;
 	int width, height;
 	float vertexData;
-	GLuint vboID;
-	GLuint eboID;
+	GLuint vboID = 0;
+	GLuint eboID = 0;
 public:
-	Sprite();
 	~Sprite();
 	void init(float x, float y, int width, int height);
 	void draw();
