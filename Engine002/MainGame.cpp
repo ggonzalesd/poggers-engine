@@ -6,6 +6,7 @@ MainGame::MainGame() {
 	height = 600;
 	gameState = GameState::PLAY;
 	timer = 0.0f;
+	timerSpawn = 0.0f;
 }
 
 MainGame::~MainGame() {
@@ -52,14 +53,23 @@ void MainGame::draw() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// si tengo elementos actualizo
 
+	timerSpawn += 0.001f;
+	if (timerSpawn > 1.0f) {
+		timerSpawn = 0.0f;
+		size_t index = points.size();
+		points.push_back(std::make_pair(cosf(timer) * 0.25f, sinf(timer) * 0.25f));
+	}
+
 	timer += 0.001f;
 
 	shader.Use();
 	GLint uDesface = shader.getUniform("uDesface");
+	GLint uAddPoss = shader.getUniform("uAddPoss");
 
-	for (size_t i = 0; i < sprites.size(); i++) {
+	for (size_t i = 0; i < points.size(); i++) {
 		glUniform1f(uDesface, timer + 0.1f*i);
-		sprites[i].draw();
+		glUniform2f(uAddPoss, points[i].first, points[i].second);
+		sprite.draw();
 	}
 	
 	SDL_GL_SwapWindow(window);
@@ -68,10 +78,7 @@ void MainGame::draw() {
 void MainGame::run() {
 	init();
 	
-	sprites = { Sprite(), Sprite() };
-	
-	sprites[0].init(-0.6, -0.6, 1, 1);
-	sprites[1].init(-0.5, -0.5, 1, 1);
+	sprite.init(-0.5f, -0.5f, 1, 1);
 
 	update();
 }

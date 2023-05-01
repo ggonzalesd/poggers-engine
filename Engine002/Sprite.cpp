@@ -23,7 +23,7 @@ void Sprite::init(float x, float y, int width, int height) {
 
 	float vertexData[] = {
 	// |--Position--|  |----Color----|  |---UV---|  
-		x,  y,  0.0,    1.0, 1.0, 0.0,   0.0, 0.0,
+		x,  y,  0.0,    1.0, 1.0, 1.0,   0.0, 0.0,
 		xw, y,  0.0,    0.0, 1.0, 1.0,   0.0, 0.0,
 		x,  yh, 0.0,    1.0, 0.0, 1.0,   0.0, 0.0,
 		xw, yh, 0.0,    0.1, 1.0, 0.1,   0.0, 0.0,
