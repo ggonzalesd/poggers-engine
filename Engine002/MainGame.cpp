@@ -1,10 +1,13 @@
 #include "MainGame.h"
+#include <glm/gtc/type_ptr.hpp>
 
 MainGame::MainGame() {
 	window = nullptr;
 	width = 600;
 	height = 600;
 	gameState = GameState::PLAY;
+	timer = 0.f;
+	lastTime = 0;
 }
 
 MainGame::~MainGame() {
@@ -43,21 +46,64 @@ void MainGame::processInput() {
 
 void MainGame::initShader()
 {
-	shader = Shader("Shader/vert.glsl", "Shader/frag.glsl", {"aPosition", "aColor"});
+	shader = Shader("Shader/vert.glsl", "Shader/frag.glsl", {"aPosition", "aColor", "aUV"});
 }
 
 void MainGame::draw() {
+
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	timer += 0.2f * 3.14f / 60.f;
+	glm::mat4 model = glm::mat4(1.0f);
+
+	model = glm::rotate(model, timer, glm::vec3(0.f, 0.f, 1.0f));
+
+	camera.update();
+	
 	// si tengo elementos actualizo
 	shader.Use();
-	sprite.draw();
-	SDL_GL_SwapWindow(window);
+	camera.Uniform(shader, "uCamera");
+	sprite.Bind();
+
+	for (int i = 0; i<agents.size(); i++) { 
+
+		agents[0].scale = 0.5f;
+		agents[0].position.x = 0.75f * cosf(timer+i);
+		agents[0].position.y = 0.75f * sinf(timer+i);
+
+		agents[0].updateModel();
+		agents[0].Uniform(shader);
+		agents[0].Draw(sprite);
+	}
+	
+	sprite.Unbind();
+	
+	{
+		Uint32 deltaTime = SDL_GetTicks() - lastTime;
+		if (deltaTime < 11)
+			SDL_Delay(11 - deltaTime);
+		lastTime = SDL_GetTicks();
+		SDL_GL_SwapWindow(window);
+	}
 }
 
 void MainGame::run() {
 	init();
-	sprite.init(-0.5, -0.5, 1, 1);
+
+	sprite.init();
+	texture = Texture("Images/texture03.png", true);
+
+	lastTime = SDL_GetTicks();
+	camera = Camera(width, height);
+
+	agents = {
+		Agent(&texture),
+		Agent(&texture),
+		Agent(&texture),
+		Agent(&texture)
+	};
+
 	update();
 }
 

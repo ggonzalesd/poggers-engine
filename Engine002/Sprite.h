@@ -1,20 +1,23 @@
 #pragma once
 #include <GL/glew.h>
 #include <cmath>
+#include <vector>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Sprite
 {
 private:
-	float x, y;
-	int width, height;
-	float vertexData;
-	GLuint vboID;
+	GLuint vboID;//, vboInsID;
 	GLuint eboID;
+	GLuint vaoID;
 public:
+	//std::vector<glm::mat4> instances;
 	Sprite();
 	~Sprite();
-	void init(float x, float y, int width, int height);
+	//void updateInstances();
+	void init();
+	void Bind();
 	void draw();
-
+	void Unbind();
 };
 

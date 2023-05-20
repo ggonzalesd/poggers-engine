@@ -1,8 +1,12 @@
 #pragma once
 #include <SDL/SDL.h>
 #include <GL/eglew.h>
+#include <cmath>
 #include "Shader.h"
 #include "Sprite.h"
+#include "Texture.h"
+#include "Camera.h"
+#include "Agent.h"
 
 enum class GameState {
 	PLAY, EXIT
@@ -16,6 +20,11 @@ private:
 	SDL_Window* window;
 	Sprite sprite;
 	Shader shader;
+	Texture texture;
+	std::vector<Agent> agents;
+	Camera camera;
+	float timer;
+	Uint32 lastTime;
 	void init();
 	void processInput();
 	void initShader();

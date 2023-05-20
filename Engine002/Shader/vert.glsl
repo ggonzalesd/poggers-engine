@@ -1,11 +1,17 @@
-#version 330 core
+#version 130
 
 in vec3 aPosition;
 in vec3 aColor;
+in vec2 aUV;
 
 out vec3 vColor;
+out vec2 vUV;
+
+uniform mat4 uCamera;
+uniform mat4 uModel;
 
 void main() {
-  gl_Position = vec4(aPosition, 1.0);
+  gl_Position = uCamera * uModel * vec4(aPosition, 1.0);
   vColor = aColor;
+  vUV = aUV;
 }
