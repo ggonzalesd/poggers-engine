@@ -4,7 +4,6 @@ Sprite::Sprite() {
 	vboID = 0;
 	eboID = 0;
 	vaoID = 0;
-	//vboInsID = 0;
 }
 Sprite::~Sprite() {
 }
@@ -16,8 +15,6 @@ void Sprite::init() {
 		glGenBuffers(1, &vboID);
 	if (eboID == 0)
 		glGenBuffers(1, &eboID);
-	//if (vboInsID == 0)
-	//	glGenBuffers(1, &vboInsID);
 
 	float x = -0.5;
 	float y = -0.5;
@@ -27,10 +24,10 @@ void Sprite::init() {
 
 	float vertexData[] = {
 	// |--Position--|  |----Color----|  |---UV---|  
-		x,  y,  0.0,    1.0, 1.0, 1.0,   0.0, 1.0,
-		xw, y,  0.0,    1.0, 1.0, 1.0,   1.0, 1.0,
-		x,  yh, 0.0,    1.0, 1.0, 1.0,   0.0, 0.0,
-		xw, yh, 0.0,    1.1, 1.0, 1.0,   1.0, 0.0,
+		x,  y,  0.0,    1.0, 1.0, 1.0,   1.0, 1.0,
+		xw, y,  0.0,    1.0, 1.0, 1.0,   0.0, 1.0,
+		x,  yh, 0.0,    1.0, 1.0, 1.0,   1.0, 0.0,
+		xw, yh, 0.0,    1.1, 1.0, 1.0,   0.0, 0.0,
 	};
 
 	GLuint indices[] = {
@@ -54,29 +51,8 @@ void Sprite::init() {
 		glEnableVertexAttribArray(i);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	/*
-	glBindBuffer(GL_ARRAY_BUFFER, vboInsID);
-	glBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(glm::mat4), instances.data(), GL_STATIC_DRAW);
-	for (int i = 0; i < 4; i++) {
-		glVertexAttribPointer(3+i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
-		glEnableVertexAttribArray(3+i);
-		glVertexAttribDivisor(3+i, 1);
-	}
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	*/
-
 	glBindVertexArray(0);
 }
-
-/*
-void Sprite::updateInstances() {
-	glBindVertexArray(vaoID);
-	glBindBuffer(GL_ARRAY_BUFFER, vboInsID);
-	glBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(glm::mat4), instances.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-*/
 
 void Sprite::Bind() {
 	glBindVertexArray(vaoID);

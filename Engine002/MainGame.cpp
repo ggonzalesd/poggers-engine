@@ -1,4 +1,5 @@
 #include "MainGame.h"
+#include <time.h>
 #include <glm/gtc/type_ptr.hpp>
 
 MainGame::MainGame() {
@@ -54,10 +55,7 @@ void MainGame::draw() {
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	timer += 0.2f * 3.14f / 60.f;
-	glm::mat4 model = glm::mat4(1.0f);
-
-	model = glm::rotate(model, timer, glm::vec3(0.f, 0.f, 1.0f));
+	timer += 0.15f * 3.14f / 60.f;
 
 	camera.update();
 	
@@ -67,14 +65,18 @@ void MainGame::draw() {
 	sprite.Bind();
 
 	for (int i = 0; i<agents.size(); i++) { 
+		float angle = atan2f(agents[i].position.y, agents[i].position.x);
+		agents[i].fx -= 0.001f * cosf(angle);
+		agents[i].fy -= 0.001f * sinf(angle);
 
-		agents[0].scale = 0.5f;
-		agents[0].position.x = 0.75f * cosf(timer+i);
-		agents[0].position.y = 0.75f * sinf(timer+i);
+		agents[i].scale = 0.25f;
+		agents[i].position.x += agents[i].fx;
+		agents[i].position.y += agents[i].fy;
+		agents[i].angle = cosf(timer + i + agents[i].position.x + agents[i].position.y);
 
-		agents[0].updateModel();
-		agents[0].Uniform(shader);
-		agents[0].Draw(sprite);
+		agents[i].updateModel();
+		agents[i].Uniform(shader);
+		agents[i].Draw(sprite);
 	}
 	
 	sprite.Unbind();
@@ -90,19 +92,42 @@ void MainGame::draw() {
 
 void MainGame::run() {
 	init();
+	srand(time(NULL));
 
 	sprite.init();
-	texture = Texture("Images/texture03.png", true);
 
 	lastTime = SDL_GetTicks();
 	camera = Camera(width, height);
 
-	agents = {
-		Agent(&texture),
-		Agent(&texture),
-		Agent(&texture),
-		Agent(&texture)
-	};
+	auto tex01 = textureCache["Images/texture01.png"];
+	auto tex02 = textureCache["Images/texture02.png"];
+	auto tex03 = textureCache["Images/texture03.png"];
+	auto tex04 = textureCache["Images/texture04.png"];
+
+	for (int i = 0; i < 100; i++) {
+		switch (rand()%4)
+		{
+		case 0:
+			agents.push_back(Agent(tex01, glm::vec3(0.f), { 1.0f, .0f, 1.f }));
+			break;
+		case 1:
+			agents.push_back(Agent(tex02, glm::vec3(0.f), {1.0f, 1.0f, 0.f}));
+			break;
+		case 2:
+			agents.push_back(Agent(tex03, glm::vec3(0.f), { 0.f, 1.0f, 0.f }));
+			break;
+		case 3:
+			agents.push_back(Agent(tex04));
+			break;
+		}
+	}
+
+	for (Agent& agent : agents) {
+		agent.fx = 0.0002f * (float)(rand() % 200 - 100);
+		agent.fy = 0.0002f * (float)(rand() % 200 - 100);
+		agent.position.x = 0.01f * (float)(rand() % 180 - 90);
+		agent.position.y = 0.01f * (float)(rand() % 180 - 90);
+	}
 
 	update();
 }

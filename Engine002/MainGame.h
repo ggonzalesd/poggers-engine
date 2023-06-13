@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "Camera.h"
 #include "Agent.h"
+#include "TextureCache.h"
 
 enum class GameState {
 	PLAY, EXIT
@@ -20,7 +21,7 @@ private:
 	SDL_Window* window;
 	Sprite sprite;
 	Shader shader;
-	Texture texture;
+	TextureCache textureCache;
 	std::vector<Agent> agents;
 	Camera camera;
 	float timer;
