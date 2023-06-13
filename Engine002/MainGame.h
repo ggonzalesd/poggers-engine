@@ -1,40 +1,50 @@
 #pragma once
 #include <SDL/SDL.h>
 #include <GL/eglew.h>
-#include <cmath>
-#include "Shader.h"
 #include "Sprite.h"
-#include "Texture.h"
-#include "Camera.h"
-#include "Agent.h"
-#include "TextureCache.h"
+#include "HLSLProgram.h"
+#include "Window.h"
+#include "Camera2D.h"
+#include "InputManager.h"
+#include "Level.h"
+#include "Player.h"
+#include "Human.h"
+#include "Zombie.h"
+#include "SpriteBatch.h"
 
 enum class GameState {
-	PLAY, EXIT
+	PLAY,EXIT
 };
 
-class MainGame {
-
+class MainGame
+{
 private:
 	int width;
 	int height;
-	SDL_Window* window;
+	SpriteBatch spriteBatch;
+	vector<Level*> levels;
+	vector<Human*> humans;
+	vector<Zombie*> zombies;
+	Player* player;
+	int currentLevel;
+	Window window;
+	HLSLProgram program;
 	Sprite sprite;
-	Shader shader;
-	TextureCache textureCache;
-	std::vector<Agent> agents;
-	Camera camera;
-	float timer;
-	Uint32 lastTime;
+	Camera2D camera2D;
+	InputManager inputManager;
 	void init();
+	void initLevel();
 	void processInput();
-	void initShader();
-
+	void initShaders();
+	void handleInput();
+	void updateElements();
 public:
 	MainGame();
 	~MainGame();
 	GameState gameState;
+	
 	void run();
 	void draw();
 	void update();
 };
+

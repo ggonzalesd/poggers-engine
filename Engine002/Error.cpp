@@ -1,9 +1,11 @@
-#include "Error.h"
+#include <iostream>
 
-void fatalError(std::string errorString) {
-	std::cerr << errorString << std::endl;
-	std::cerr << "Enter any key to quit " << std::endl;
+using namespace std;
+
+void fatalError(string errorString) {
+	cout << errorString << endl;
+	cout << "Enter any key to quit " << endl;
 	int tmp;
-	std::cin >> tmp;
+	cin >> tmp;
 	exit(-1);
 }

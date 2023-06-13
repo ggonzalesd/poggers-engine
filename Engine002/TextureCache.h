@@ -1,13 +1,17 @@
 #pragma once
+#include "GLTexture.h"
 #include <map>
-#include "Texture.h"
+#include <string>
+
+using namespace std;
 
 class TextureCache
 {
 private:
-	std::map<std::string, Texture*> cache = {};
-
+	map<string, GLTexture> textureMap;
 public:
-	Texture* operator[] (std::string path);
+	TextureCache();
+	~TextureCache();
+	GLTexture getTexture(string texturePath);
 };
 

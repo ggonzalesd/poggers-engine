@@ -1,31 +1,39 @@
 #pragma once
-#include "Sprite.h"
-#include "Shader.h"
-#include "Texture.h"
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
+#include "SpriteBatch.h"
+#include "GLTexture.h"
+#include <string>
+#include "Level.h"
+
+class Zombie;
+class Human;
+
+const float AGENT_WIDTH = 60.f;
+const float AGENT_RADIUS = AGENT_WIDTH / 2.0f;
 
 class Agent
 {
-private:
-	glm::mat4 model = glm::mat4(1.0f);
-	Texture* texture = nullptr;
-
+protected:
+	string path;
+	glm::vec2 position;
+	float speed;
+	Color color;
+	void checkTilePosition(const vector<string>& levelData,
+		vector<glm::vec2>& collideTilePosition,float x,float y);
+	void collideWithTile(glm::vec2 tilePos);
 public:
-	glm::vec3 color = glm::vec3(1.0f);
-	glm::vec3 position = glm::vec3(0.f);
-	float scale = 1.0f;
-	float angle = 0.0f;
-	float fx = 0.0f;
-	float fy = 0.0f;
-
-	Agent(Texture* texture_, const glm::vec3 &position_=glm::vec3(0.f), const glm::vec3 &color_ = glm::vec3(1.0f));
-	~Agent();
-
-	void updateModel();
-
-	void Uniform(Shader& shader);
-	void Uniform(GLint uModel, GLint uTexture, GLint uColor);
-
-	void Draw(Sprite& sprite);
+	Agent();
+	glm::vec2 getPosition() {
+		return position;
+	}
+	void setPosition(glm::vec2 position) {
+		this->position = position;
+	}
+	virtual void update(const vector<string>& levelData,vector<Human*>& humans,
+			vector<Zombie*>& zombies) = 0;
+	void draw(SpriteBatch& spriteBatch);
+	bool collideWithLevel(const vector<string>& levelData);
+	virtual ~Agent();
+	bool collideWithAgent(Agent* agent);
 };
 

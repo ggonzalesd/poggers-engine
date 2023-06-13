@@ -1,14 +1,25 @@
 #include "TextureCache.h"
+#include "ImageLoader.h"
+using namespace std;
 
+TextureCache::TextureCache()
+{
+}
 
-Texture* TextureCache::operator[] (std::string path) {
-	auto pointer = cache.find(path);
-	if (pointer == cache.end()) {
-		Texture* texture = new Texture(path.c_str());
-		std::pair<std::string, Texture*> item = std::make_pair(path, texture);
-		cache.insert(item);
+TextureCache::~TextureCache()
+{
+}
+
+GLTexture TextureCache::getTexture(string texturePath)
+{
+	auto mit = textureMap.find(texturePath);
+	if (mit == textureMap.end()) {
+		GLTexture texture = ImageLoader::loadPNG(texturePath);
+		pair<string, GLTexture> newPair(texturePath, texture);
+		textureMap.insert(newPair);
+		//textureMap[texturePath] = texture;
 		return texture;
-	} else {
-		return pointer->second;
 	}
+	return mit->second;
+	
 }

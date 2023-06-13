@@ -1,69 +1,72 @@
 #include "Sprite.h"
+#include <cstddef>
+#include "Vertex.h"
+#include "ResourceManager.h"
+
 
 Sprite::Sprite() {
 	vboID = 0;
-	eboID = 0;
-	vaoID = 0;
-}
-Sprite::~Sprite() {
 }
 
-void Sprite::init() {
-	if (vaoID == 0)
-		glGenVertexArrays(1, &vaoID);
-	if (vboID == 0)
+void Sprite::init(float x, float y, int width, int height,string texturePath) {
+	this->x = x;
+	this->y = y;
+	this->width = width;
+	this->height = height;
+	if (vboID == 0) {
 		glGenBuffers(1, &vboID);
-	if (eboID == 0)
-		glGenBuffers(1, &eboID);
+	}
 
-	float x = -0.5;
-	float y = -0.5;
+	texture = ResourceManager::getTexture(texturePath);
 
-	float xw = x + 1.0f;
-	float yh = y + 1.0f;
+	Vertex vertexData[6];
+	vertexData[0].setUV(1.0f,1.0f);
+	vertexData[1].setUV(0.0f,1.0f);
+	vertexData[2].setUV(0.0f,0.0f);
+	vertexData[3].setUV(0.0f, 0.0f);
+	vertexData[4].setUV(1.0f, 0.0f);
+	vertexData[5].setUV(1.0f, 1.0f);
 
-	float vertexData[] = {
-	// |--Position--|  |----Color----|  |---UV---|  
-		x,  y,  0.0,    1.0, 1.0, 1.0,   1.0, 1.0,
-		xw, y,  0.0,    1.0, 1.0, 1.0,   0.0, 1.0,
-		x,  yh, 0.0,    1.0, 1.0, 1.0,   1.0, 0.0,
-		xw, yh, 0.0,    1.1, 1.0, 1.0,   0.0, 0.0,
-	};
+	vertexData[0].setPosition(x + width, y + height);
+	vertexData[1].setPosition(x, y + height);
+	vertexData[2].setPosition(x, y );
+	vertexData[3].setPosition(x , y);
+	vertexData[4].setPosition(x + width, y);
+	vertexData[5].setPosition(x + width, y + height);
 
-	GLuint indices[] = {
-		0, 2, 1,
-		1, 2, 3
-	};
-
-	glBindVertexArray(vaoID);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+	for (int i = 0; i < 6; i++)
+	{
+		vertexData[i].setColor(255, 255, 0, 255);
+	}
+	vertexData[2].setColor(255, 0, 255, 255);
+	vertexData[3].setColor(0, 255, 255, 255);
 	glBindBuffer(GL_ARRAY_BUFFER, vboID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(sizeof(GLfloat) * 3));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(sizeof(GLfloat) * 6));
-	for (GLuint i = 0; i < 3; i++)
-		glEnableVertexAttribArray(i);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
+	
 }
-
-void Sprite::Bind() {
-	glBindVertexArray(vaoID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
-}
-
-void Sprite::Unbind() {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
 void Sprite::draw() {
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
+	glBindBuffer(GL_ARRAY_BUFFER, vboID);
+	glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,position));
+
+	//glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
+			(void*)offsetof(Vertex, uv));
+
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDisableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+Sprite::~Sprite() {
+	if (vboID != 0) {
+		glDeleteBuffers(1, &vboID);
+	}
 }
