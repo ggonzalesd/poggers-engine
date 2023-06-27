@@ -19,7 +19,7 @@ protected:
 	float speed;
 	Color color;
 	void checkTilePosition(const vector<string>& levelData,
-		vector<glm::vec2>& collideTilePosition,float x,float y);
+		vector<glm::vec2>& collideTilePosition, float x, float y);
 	void collideWithTile(glm::vec2 tilePos);
 public:
 	Agent();
@@ -29,11 +29,10 @@ public:
 	void setPosition(glm::vec2 position) {
 		this->position = position;
 	}
-	virtual void update(const vector<string>& levelData,vector<Human*>& humans,
-			vector<Zombie*>& zombies) = 0;
+	virtual void update(const vector<string>& levelData, vector<Human*>& humans,
+		vector<Zombie*>& zombies) = 0;
 	void draw(SpriteBatch& spriteBatch);
 	bool collideWithLevel(const vector<string>& levelData);
 	virtual ~Agent();
 	bool collideWithAgent(Agent* agent);
 };
-

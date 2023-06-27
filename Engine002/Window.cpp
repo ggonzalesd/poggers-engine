@@ -27,7 +27,7 @@ int Window::create(string windowName, int screenWidth, int screenHeight, unsigne
         screenWidth, screenHeight, flags);
 
     if (window == nullptr) {
-        
+
     }
     SDL_GLContext glContext = SDL_GL_CreateContext(window);
     GLenum error = glewInit();

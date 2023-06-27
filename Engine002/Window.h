@@ -29,4 +29,3 @@ public:
 	int create(string windowName, int screenWidth, int screenHeight,
 		unsigned int currentFlags);
 };
-

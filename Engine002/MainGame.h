@@ -9,11 +9,12 @@
 #include "Level.h"
 #include "Player.h"
 #include "Human.h"
+#include "Bullet.h"
 #include "Zombie.h"
 #include "SpriteBatch.h"
 
 enum class GameState {
-	PLAY,EXIT
+	PLAY, EXIT
 };
 
 class MainGame
@@ -21,8 +22,12 @@ class MainGame
 private:
 	int width;
 	int height;
+	long totalZombies;
+	long totalHumanos;
 	SpriteBatch spriteBatch;
+	SpriteBatch hudBatch;
 	vector<Level*> levels;
+	vector<Bullet*> bullets;
 	vector<Human*> humans;
 	vector<Zombie*> zombies;
 	Player* player;
@@ -38,13 +43,14 @@ private:
 	void initShaders();
 	void handleInput();
 	void updateElements();
+	void createBullet();
 public:
 	MainGame();
 	~MainGame();
 	GameState gameState;
-	
+
 	void run();
 	void draw();
+	void drawHud();
 	void update();
 };
-

@@ -9,7 +9,7 @@ using namespace std;
 MainGame::MainGame() {
 	width = 800;
 	height = 600;
-	gameState = GameState::PLAY;	
+	gameState = GameState::PLAY;
 	camera2D.init(width, height);
 }
 
@@ -21,32 +21,32 @@ void MainGame::processInput() {
 	while (SDL_PollEvent(&event)) {
 		switch (event.type)
 		{
-			case SDL_QUIT:
-				gameState = GameState::EXIT;
-				break;
-			case SDL_MOUSEMOTION:
-				//cout << "Posicion del mousec " << event.motion.x << " " << event.motion.y << endl;
-				inputManager.setMouseCoords(event.motion.x, event.motion.y);
-				glm::vec2 mouseCoords = camera2D.convertToScreenWorld(inputManager.getMouseCoords());
-				//cout << "Nueva posicion de acuerdo a camara " <<  mouseCoords.x
-					//	<< " " << mouseCoords.y << endl;
-				break;
-			case SDL_KEYUP:
-				inputManager.releaseKey(event.key.keysym.sym);
-				break;
-			case SDL_KEYDOWN:
-				inputManager.pressKey(event.key.keysym.sym);
-				break;
-			case SDL_MOUSEBUTTONDOWN:
-				inputManager.pressKey(event.button.button);
-				break;
-			case SDL_MOUSEBUTTONUP:
-				inputManager.releaseKey(event.button.button);
-				break;
+		case SDL_QUIT:
+			gameState = GameState::EXIT;
+			break;
+		case SDL_MOUSEMOTION:
+			/*cout << "Posicion del mousec " << event.motion.x << " " << event.motion.y << endl;
+			inputManager.setMouseCoords(event.motion.x, event.motion.y);
+			glm::vec2 mouseCoords = camera2D.convertToScreenWorld(inputManager.getMouseCoords());
+			//cout << "Nueva posicion de acuerdo a camara " <<  mouseCoords.x
+				//	<< " " << mouseCoords.y << endl;*/
+			break;
+		case SDL_KEYUP:
+			inputManager.releaseKey(event.key.keysym.sym);
+			break;
+		case SDL_KEYDOWN:
+			inputManager.pressKey(event.key.keysym.sym);
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			inputManager.pressKey(event.button.button);
+			break;
+		case SDL_MOUSEBUTTONUP:
+			inputManager.releaseKey(event.button.button);
+			break;
 		}
 		handleInput();
 	}
-	
+
 }
 
 void MainGame::handleInput()
@@ -59,8 +59,15 @@ void MainGame::handleInput()
 	if (inputManager.isKeyPressed(SDLK_e)) {
 		camera2D.setScale(camera2D.getScale() - SCALE_SPEED);
 	}
+	if (inputManager.isKeyPressed(SDLK_f)) {
+		std::cout << "Total Zombies: " << totalZombies << std::endl;
+		std::cout << "Total Humanos: " << totalHumanos << std::endl;
+		std::cout << "- - - - - - - - - - - - - - - - - -" << std::endl;
+	}
+
 	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
 		//cout << "CLICK IZQUIERDO" << endl;
+		createBullet();
 	}
 
 	if (inputManager.isKeyPressed(SDL_BUTTON_RIGHT)) {
@@ -70,6 +77,19 @@ void MainGame::handleInput()
 	if (inputManager.isKeyPressed(SDL_BUTTON_MIDDLE)) {
 		//cout << "CLICK CENTRO" << endl;
 	}
+}
+
+void MainGame::createBullet() {
+	glm::vec2 mouseCoords =
+		camera2D.convertToScreenWorld(inputManager.getMouseCoords());
+	glm::vec2 playerPosition(0, 0);
+	glm::vec2 direction = mouseCoords - player->getPosition();
+	direction = glm::normalize(direction);
+	//bullets.emplace_back(playerPosition, direction, 1.0f, 1000);
+
+	//bullets.push_back(new Bullet(playerPosition, direction, 1.0f, 1000));
+	Bullet* bullet = new Bullet(player->getPosition(), direction, 1.0f, 1000);
+	bullets.push_back(bullet);
 }
 
 void MainGame::initShaders()
@@ -83,12 +103,11 @@ void MainGame::initShaders()
 
 void MainGame::init() {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	window.create("Mundo 1", width, height,0);
+	window.create("Mundo 1", width, height, 0);
 	GLenum error = glewInit();
 	if (error != GLEW_OK) {
 		fatalError("Glew not initialized");
 	}
-	
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 	initLevel();
 	initShaders();
@@ -99,8 +118,9 @@ void MainGame::initLevel() {
 	currentLevel = 0;
 	//inicializar humans,player y zombie
 	player = new Player();
-	player->init(1.0f, levels[currentLevel]->getPlayerPosition(), &inputManager);
+	player->init(5.0f, levels[currentLevel]->getPlayerPosition(), &inputManager);
 	spriteBatch.init();
+	hudBatch.init();
 
 	std::mt19937 randomEngine(time(nullptr));
 	std::uniform_int_distribution<int>randPosX(
@@ -115,11 +135,18 @@ void MainGame::initLevel() {
 			randPosY(randomEngine) * TILE_WIDTH);
 		humans.back()->init(1.0f, pos);
 	}
-	for (const glm::vec2 pos : levels[currentLevel]->getZombiesPosition()) {
+
+	const std::vector<glm::vec2>& zombiePosition =
+		levels[currentLevel]->getZombiesPosition();
+
+	for (size_t i = 0; i < zombiePosition.size(); i++)
+	{
 		zombies.push_back(new Zombie());
-		zombies.back()->init(1.0f, pos);
+		zombies.back()->init(1.3f, zombiePosition[i]);
 	}
 
+	totalHumanos = humans.size();
+	totalZombies = zombies.size();
 }
 
 void MainGame::draw() {
@@ -140,15 +167,35 @@ void MainGame::draw() {
 	{
 		humans[i]->draw(spriteBatch);
 	}
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		bullets[i]->draw(spriteBatch);
+	}
 	for (size_t i = 0; i < zombies.size(); i++)
 	{
 		zombies[i]->draw(spriteBatch);
 	}
 	spriteBatch.end();
 	spriteBatch.renderBatch();
+	drawHud();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	program.unuse();
 	window.swapWindow();
+}
+
+void MainGame::drawHud()
+{
+	glm::mat4 cameraMatrix = camera2D.getCameraMatrix();
+	GLuint pCameraLocation = program.getUniformLocation("pCamera");
+	glUniformMatrix4fv(pCameraLocation, 1, GL_FALSE, &(cameraMatrix[0][0]));
+
+	char buffer[256];
+	hudBatch.begin();
+	sprintf_s(buffer, "HOLAAAAAAA");
+	Color color;
+	color.set(255, 255, 255, 255);
+	hudBatch.end();
+	hudBatch.renderBatch();
 }
 
 void MainGame::run() {
@@ -162,9 +209,31 @@ void MainGame::updateElements() {
 	{
 		humans[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
 	}
-	for (size_t i = 0; i < zombies.size(); i++)
-	{
+	for (size_t i = 0; i < zombies.size(); i++) {
 		zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
+
+		for (size_t j = 0; j < humans.size(); j++)
+		{
+			if (zombies[i]->collideWithAgent(humans[j])) {
+				zombies.push_back(new Zombie());
+				zombies.back()->init(1.3f, humans[j]->getPosition());
+				delete humans[j];
+				humans[j] = humans.back();
+				humans.pop_back();
+				totalHumanos--;
+				totalZombies++;
+			}
+		}
+	}
+	for (size_t i = 0; i < bullets.size();)
+	{
+		if (bullets[i]->update()) {
+			bullets[i] = bullets.back();
+			bullets.pop_back();
+		}
+		else {
+			i++;
+		}
 	}
 }
 
