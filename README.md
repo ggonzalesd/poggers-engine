@@ -1,7 +1,7 @@
 # Trabajo Final | ANIMATIONS
 ## Integrantes
 * u201920609 | Grober Ericson Gonzales De La Cruz
-* u201921200| Tito Peng Wu Pan
+* u201921200 | Tito Peng Wu Pan
 
 Para el trabajo final se agregó una clase que se encarga de animar los sprites haciendo uso de los UV.
 
