@@ -36,8 +36,8 @@ public:
 };
 ```
 ### Atributos
-* **split**: indice las divisiones de la imagen (cortes).
-* **index**: indices actual del corte de la imagen (el indice es unidimesional y puede retresentar cualquier corte de la imagen original).
+* **split**: divisiones de la imagen (cortes).
+* **index**: índices actual del corte de la imagen (el indice es unidimesional y puede retresentar cualquier corte de la imagen original).
 * **animations**: el la lista de animaciones, cada animacion es una vector de indices.
 * **animation**: indica que animación se está usando.
 * **counter**: variable auxiliar para hacer el conteo del tiempo en frames que se mostrará un frame.
