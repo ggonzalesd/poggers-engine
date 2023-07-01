@@ -78,9 +78,9 @@ void Agent::draw(SpriteBatch& spriteBatch)
     spriteBatch.draw(destRect, uvRect, textureID, 0.0f, color);
 }
 ```
-> La configuración mostrada en el código significa que el objeto `animator` incia como un sprite de 5x5 frames y que cada frame tendrá un tiempo de 10 iteraciones para mostrarse.
-> La animación configurada es una que hace un loop de una fila.
-> Se selecciona la animación recien creada.
+* La configuración mostrada en el código significa que el objeto `animator` incia como un sprite de 5x5 frames y que cada frame tendrá un tiempo de 10 iteraciones para mostrarse.
+* La animación configurada es una que hace un loop de una fila.
+* Se selecciona la animación recien creada.
 ## Formato de la imagen
 Las texturas necesarias deben de ser conformadas por imágenes cuadradas que componen una imagen cuadrada final.
 > ![](./Engine002/Textures/animation.png)
