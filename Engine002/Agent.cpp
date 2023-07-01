@@ -47,12 +47,16 @@ void Agent::collideWithTile(glm::vec2 tilePos)
 
 Agent::Agent()
 {
+    animator = Animator(5, 10);
+    animator.addAnimation({ 0, 1, 2, 3, 4, 5, 4, 3, 2, 1 });
+    animator.setAnimation(1);
 }
 
 void Agent::draw(SpriteBatch& spriteBatch)
 {
+    animator.update();
     static int textureID = ResourceManager::getTexture(path).id;
-    const glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
+    const glm::vec4 uvRect = animator.getUV();
     glm::vec4 destRect(position.x, position.y, AGENT_WIDTH, AGENT_WIDTH);
     spriteBatch.draw(destRect, uvRect, textureID, 0.0f, color);
 }

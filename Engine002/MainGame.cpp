@@ -162,7 +162,6 @@ void MainGame::draw() {
 	glUniform1i(imageLocation, 0);
 	spriteBatch.begin();
 	levels[currentLevel]->draw();
-	player->draw(spriteBatch);
 	for (size_t i = 0; i < humans.size(); i++)
 	{
 		humans[i]->draw(spriteBatch);
@@ -175,6 +174,7 @@ void MainGame::draw() {
 	{
 		zombies[i]->draw(spriteBatch);
 	}
+	player->draw(spriteBatch);
 	spriteBatch.end();
 	spriteBatch.renderBatch();
 	drawHud();

@@ -13,7 +13,7 @@ Human::~Human()
 
 void Human::init(float speed, glm::vec2 position)
 {
-	this->path = "Textures/circle.png";
+	this->path = "Images/Image.png";
 	this->speed = speed;
 	this->position = position;
 	color.set(0, 0, 255, 255);

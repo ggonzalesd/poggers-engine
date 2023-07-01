@@ -4,6 +4,7 @@
 #include "GLTexture.h"
 #include <string>
 #include "Level.h"
+#include "Animator.h"
 
 class Zombie;
 class Human;
@@ -14,6 +15,7 @@ const float AGENT_RADIUS = AGENT_WIDTH / 2.0f;
 class Agent
 {
 protected:
+	Animator animator;
 	string path;
 	glm::vec2 position;
 	float speed;
@@ -31,7 +33,7 @@ public:
 	}
 	virtual void update(const vector<string>& levelData, vector<Human*>& humans,
 		vector<Zombie*>& zombies) = 0;
-	void draw(SpriteBatch& spriteBatch);
+	virtual void draw(SpriteBatch& spriteBatch);
 	bool collideWithLevel(const vector<string>& levelData);
 	virtual ~Agent();
 	bool collideWithAgent(Agent* agent);
